@@ -1,22 +1,28 @@
 package pl.polsl.domain;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.util.Hashtable;
+import java.io.File;
+import java.io.IOException;
+import java.util.stream.Stream;
 
-public class Image extends BufferedImage {
+public interface Image extends Cloneable, Iterable<CustomColor> {
 
-    public Image(int width, int height, int imageType) {
-        super(width, height, imageType);
-    }
+    void replaceColorValue(int x, int y, CustomColor color);
 
-    public Image(int width, int height, int imageType, IndexColorModel cm) {
-        super(width, height, imageType, cm);
-    }
+    File toFile(String writePath) throws IOException;
 
-    public Image(ColorModel cm, WritableRaster raster, boolean isRasterPremultiplied, Hashtable<?, ?> properties) {
-        super(cm, raster, isRasterPremultiplied, properties);
-    }
+    int getWidth();
+
+    int getHeight();
+
+    int getType();
+
+    CustomColor[][] getColorsMap();
+
+    String getFormat();
+
+    Stream<CustomColor> stream();
+
+    Image clone();
+
+    CustomColor[][] getPointNeighbourhood(int x, int y, int kernelSize);
 }
