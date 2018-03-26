@@ -1,7 +1,8 @@
 package pl.polsl;
 
-import pl.polsl.algorithms.BilateralAlgorithm;
-import pl.polsl.algorithms.GaussBilateralAlgorithm;
+import pl.polsl.algorithms.GaussImageFilter;
+import pl.polsl.algorithms.ImageFilter;
+import pl.polsl.algorithms.MeanFilter;
 import pl.polsl.domain.Image;
 import pl.polsl.domain.ImageFactory;
 import pl.polsl.domain.ImageTypesEnum;
@@ -20,8 +21,12 @@ public class BilateralFilteringMain {
         URI uri = resource.toURI();
         File file = new File(uri);
         Image img = new ImageFactory().getImageFromFile(ImageTypesEnum.BASIC, file);
-        BilateralAlgorithm algorithm = new GaussBilateralAlgorithm(15);
+        ImageFilter algorithm = new GaussImageFilter(31);
         Image result = algorithm.applyFilter(img);
         result.toFile("E:\\img\\result.jpg");
+
+        ImageFilter mean = new MeanFilter(31);
+        Image resultMean = mean.applyFilter(img);
+        resultMean.toFile("E:\\img\\result_mean.jpg");
     }
 }

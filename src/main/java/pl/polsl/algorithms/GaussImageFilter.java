@@ -5,7 +5,7 @@ import pl.polsl.domain.Image;
 
 import static java.lang.Math.*;
 
-public class GaussBilateralAlgorithm implements BilateralAlgorithm {
+public class GaussImageFilter implements ImageFilter {
 
     private static final int COLOR_DEPTH = 256;
 
@@ -16,7 +16,7 @@ public class GaussBilateralAlgorithm implements BilateralAlgorithm {
     private double[][] closenessFunc; //wartości funkcji bliskości pikseli
     private double[][] similarityFunc; //wartości funkcji podobieństwa piseli
 
-    public GaussBilateralAlgorithm(int kernelSize) {
+    public GaussImageFilter(int kernelSize) {
         this.kernelSize = kernelSize;
         sigmaD = 10;
         sigmaR = 300;
@@ -24,7 +24,7 @@ public class GaussBilateralAlgorithm implements BilateralAlgorithm {
         similarityFunc = new double[COLOR_DEPTH][COLOR_DEPTH];
     }
 
-    public GaussBilateralAlgorithm(int kernelSize, double sigmaD, double sigmaR) {
+    public GaussImageFilter(int kernelSize, double sigmaD, double sigmaR) {
         this.kernelSize = kernelSize;
         this.sigmaD = sigmaD;
         this.sigmaR = sigmaR;
@@ -56,7 +56,7 @@ public class GaussBilateralAlgorithm implements BilateralAlgorithm {
         initSimilarityFunc();
         input.stream().parallel().forEach(customColor -> {
             CustomColor[][] pointNeighbourhood = input.getPointNeighbourhood(customColor.getX(), customColor.getY(), kernelSize);
-            CustomColor outputColor = applyFilterInternal(customColor, pointNeighbourhood);
+            CustomColor outputColor = applyFilterInternal2(customColor, pointNeighbourhood);
             output.replaceColorValue(customColor.getX(), customColor.getY(), outputColor);
         });
         return output;
@@ -112,8 +112,8 @@ public class GaussBilateralAlgorithm implements BilateralAlgorithm {
         double nominator = 0.0;
         double denominator = 0.0;
 
-        for (int i = 0; i < kernelSize; i++) {
-            for (int j = 0; j < kernelSize; j++) {
+        for (int i = 0; i < neighbourhoodMatrix.length; i++) {
+            for (int j = 0; j < neighbourhoodMatrix[i].length; j++) {
                 int neighbourColor = neighbourhoodMatrix[i][j].getColor(colorName);
 
                 double tempColor = closenessFunc[i][j] * similarityFunc[neighbourColor][inputColor];
@@ -121,6 +121,6 @@ public class GaussBilateralAlgorithm implements BilateralAlgorithm {
                 nominator += neighbourColor * tempColor;
             }
         }
-        return (byte) (nominator / denominator);
+        return (byte) (nominator / denominator) & 0xFF;
     }
 }

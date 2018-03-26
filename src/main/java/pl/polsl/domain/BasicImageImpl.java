@@ -64,20 +64,20 @@ class BasicImageImpl extends BaseImage implements Image {
         int i = x - halfKernel;
         int imax = kernelSize;
         if (i < 0) {
+            imax = halfKernel + x;
             i = 0;
-            imax = halfKernel;
         }
         if (i + kernelSize >= colors.length - 1) {
-            imax = halfKernel;
+            imax = halfKernel + colors.length - 1 - x;
         }
         int j = y - halfKernel;
         int ymax = kernelSize;
         if (j < 0) {
+            ymax = halfKernel + y;
             j = 0;
-            ymax = halfKernel;
         }
         if (j + kernelSize >= colors[0].length - 1) {
-            ymax = halfKernel;
+            ymax = halfKernel + colors[0].length - 1 - y;
         }
         CustomColor[][] result = new CustomColor[imax][ymax];
         for (int ires = 0; ires < imax; ires++) {
