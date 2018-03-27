@@ -20,6 +20,7 @@ public class ResourceLoaderImpl implements ResourceLoader {
             throw new UnsupportedOperationException("resourcesPath should not be null");
         }
         URL resource = this.getClass().getClassLoader().getResource(resourcesPath);
+        assert resource != null;
         return Files.walk(Paths.get(resource.toURI()))
                 .filter(Files::isRegularFile)
                 .map(Path::toFile)

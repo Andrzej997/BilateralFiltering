@@ -42,9 +42,8 @@ class MeanFilter implements ImageFilter {
         double sumG = 0.0;
         double sumB = 0.0;
 
-        for (int i = 0; i < neighbourhoodMatrix.length; i++) {
-            for (int j = 0; j < neighbourhoodMatrix[i].length; j++) {
-                CustomColor neighbour = neighbourhoodMatrix[i][j];
+        for (CustomColor[] neighbourhoodArray : neighbourhoodMatrix) {
+            for (CustomColor neighbour : neighbourhoodArray) {
                 sumR += neighbour.getRed();
                 sumG += neighbour.getGreen();
                 sumB += neighbour.getBlue();

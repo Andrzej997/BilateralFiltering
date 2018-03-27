@@ -30,7 +30,10 @@ public class BilateralExperimentImpl implements ExperimentFacade {
     private String[] imageAlgorithms;
     private String resultFolder;
 
-    public BilateralExperimentImpl(ResourceLoader resourceLoader) {
+    private int maxTests;
+    private int processedTests;
+
+    BilateralExperimentImpl(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
@@ -41,17 +44,17 @@ public class BilateralExperimentImpl implements ExperimentFacade {
         config.load(resource);
         config.setListDelimiter(',');
         imageType = config.getString("imageType");
-        List kernelSizesString = config.getList("kernelSizes");
+        List<String> kernelSizesString = config.getList("kernelSizes");
         if (kernelSizesString != null && !kernelSizesString.isEmpty()) {
-            kernelSizes = (List) kernelSizesString.stream().map(o -> Integer.parseInt((String) o)).collect(Collectors.toList());
+            kernelSizes = kernelSizesString.stream().map(Integer::parseInt).collect(Collectors.toList());
         }
-        List sigmaRValuesString = config.getList("sigmaRValues");
+        List<String> sigmaRValuesString = config.getList("sigmaRValues");
         if (sigmaRValuesString != null && !sigmaRValuesString.isEmpty()) {
-            sigmaRValues = (List) sigmaRValuesString.stream().map(o -> Integer.parseInt((String) o)).collect(Collectors.toList());
+            sigmaRValues = sigmaRValuesString.stream().map(Integer::parseInt).collect(Collectors.toList());
         }
-        List sigmaDValuesString = config.getList("sigmaDValues");
+        List<String> sigmaDValuesString = config.getList("sigmaDValues");
         if (sigmaDValuesString != null && !sigmaDValuesString.isEmpty()) {
-            sigmaDValues = (List) sigmaDValuesString.stream().map(o -> Integer.parseInt((String) o)).collect(Collectors.toList());
+            sigmaDValues = sigmaDValuesString.stream().map(Integer::parseInt).collect(Collectors.toList());
         }
         String imageTypesName = config.getString("domainImageType");
         imageTypeEnum = ImageTypesEnum.get(imageTypesName);
@@ -74,6 +77,7 @@ public class BilateralExperimentImpl implements ExperimentFacade {
         if (experimentFiles == null || experimentFiles.isEmpty()) {
             throw new ConfigurationException("No entry files loaded");
         }
+        prepareProgress(experimentFiles.size());
         experimentFiles.parallelStream().forEach(this::performExperimentOnFile);
     }
 
@@ -98,11 +102,25 @@ public class BilateralExperimentImpl implements ExperimentFacade {
                 Image result = filter.applyFilter(img);
                 try {
                     result.toFile(getOutputFilename(imageFile.getName(), imageAlgorithm, kernelSize, sigmaR, sigmaD, result.getFormat()));
+                    processedTests++;
+                    printProgress();
                 } catch (IOException e) {
                     throw new RuntimeException("toFile error");
                 }
             }
         })));
+    }
+
+    private void prepareProgress(int filesCount) {
+        maxTests = filesCount * (imageAlgorithms.length - 1) * (kernelSizes.size() - 1) *
+                (sigmaRValues.size() - 1) * (sigmaDValues.size() - 1);
+        processedTests = 0;
+        System.out.println("Starting experiment: 0% \n");
+    }
+
+    private void printProgress() {
+        int progress = (int) (((double) processedTests / ((double) maxTests)) * 100.0);
+        System.out.println("Current progress: " + progress + "% \n");
     }
 
     private String getOutputFilename(String baseName, String method, Integer kernelSize, Integer sigmaR, Integer sigmaD, String format) {
