@@ -3,9 +3,11 @@ package pl.polsl.algorithms;
 import pl.polsl.domain.CustomColor;
 import pl.polsl.domain.Image;
 
+import java.util.Hashtable;
+
 import static java.lang.Math.*;
 
-public class GaussImageFilter implements ImageFilter {
+class GaussImageFilter implements ImageFilter {
 
     private static final int COLOR_DEPTH = 256;
 
@@ -16,7 +18,7 @@ public class GaussImageFilter implements ImageFilter {
     private double[][] closenessFunc; //wartości funkcji bliskości pikseli
     private double[][] similarityFunc; //wartości funkcji podobieństwa piseli
 
-    public GaussImageFilter(int kernelSize) {
+    GaussImageFilter(int kernelSize) {
         this.kernelSize = kernelSize;
         sigmaD = 10;
         sigmaR = 300;
@@ -24,10 +26,41 @@ public class GaussImageFilter implements ImageFilter {
         similarityFunc = new double[COLOR_DEPTH][COLOR_DEPTH];
     }
 
-    public GaussImageFilter(int kernelSize, double sigmaD, double sigmaR) {
+    GaussImageFilter(int kernelSize, double sigmaD, double sigmaR) {
         this.kernelSize = kernelSize;
         this.sigmaD = sigmaD;
         this.sigmaR = sigmaR;
+        closenessFunc = new double[kernelSize][kernelSize];
+        similarityFunc = new double[COLOR_DEPTH][COLOR_DEPTH];
+    }
+
+    GaussImageFilter(Hashtable<String, Object> params) {
+        if (params != null && !params.isEmpty()) {
+            Object kernelSizeTemp = params.get("kernelSize");
+            if (kernelSizeTemp != null) {
+                kernelSize = (Integer) kernelSizeTemp;
+            } else {
+                kernelSize = -1;
+            }
+            Object sigmaDTemp = params.get("sigmaD");
+            if (sigmaDTemp != null) {
+                sigmaD = (Integer) sigmaDTemp;
+            } else {
+                sigmaD = -1;
+            }
+            Object sigmaRTemp = params.get("sigmaR");
+            if (sigmaRTemp != null) {
+                sigmaR = (Integer) sigmaRTemp;
+            } else {
+                sigmaR = -1;
+            }
+        } else {
+            kernelSize = -1;
+            sigmaD = -1;
+            sigmaR = -1;
+        }
+        closenessFunc = new double[kernelSize][kernelSize];
+        similarityFunc = new double[COLOR_DEPTH][COLOR_DEPTH];
     }
 
     private void initClosenessFunc() {

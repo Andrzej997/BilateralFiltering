@@ -41,6 +41,7 @@ class BasicImageImpl extends BaseImage implements Image {
     @Override
     public File toFile(String writePath) throws IOException {
         File f = new File(writePath);
+        f.mkdirs();
         ImageIO.write(this, format, f);
         return f;
     }

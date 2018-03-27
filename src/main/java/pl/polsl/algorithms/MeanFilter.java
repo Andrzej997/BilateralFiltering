@@ -3,12 +3,27 @@ package pl.polsl.algorithms;
 import pl.polsl.domain.CustomColor;
 import pl.polsl.domain.Image;
 
-public class MeanFilter implements ImageFilter {
+import java.util.Hashtable;
+
+class MeanFilter implements ImageFilter {
 
     private final int kernelSize; //rozmiar maski filtra
 
-    public MeanFilter(int kernelSize) {
+    MeanFilter(int kernelSize) {
         this.kernelSize = kernelSize;
+    }
+
+    MeanFilter(Hashtable<String, Object> params) {
+        if (params != null && !params.isEmpty()) {
+            Object kernelSizeTemp = params.get("kernelSize");
+            if (kernelSizeTemp != null) {
+                kernelSize = (Integer) kernelSizeTemp;
+            } else {
+                kernelSize = -1;
+            }
+        } else {
+            kernelSize = -1;
+        }
     }
 
     @Override
