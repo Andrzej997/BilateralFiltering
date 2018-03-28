@@ -112,8 +112,7 @@ public class BilateralExperimentImpl implements ExperimentFacade {
     }
 
     private void prepareProgress(int filesCount) {
-        maxTests = filesCount * (imageAlgorithms.length - 1) * (kernelSizes.size() - 1) *
-                (sigmaRValues.size() - 1) * (sigmaDValues.size() - 1);
+        maxTests = filesCount * imageAlgorithms.length * kernelSizes.size() * sigmaRValues.size() * sigmaDValues.size();
         processedTests = 0;
         System.out.println("Starting experiment: 0% \n");
     }
