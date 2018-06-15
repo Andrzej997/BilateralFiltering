@@ -59,7 +59,7 @@ class BasicImageImpl extends BaseImage implements Image {
     @Override
     public CustomColor[][] getPointNeighbourhood(int x, int y, int kernelSize) {
         if (kernelSize % 2 == 0 || x < 0 || y < 0 || x > colors.length - 1 || y > colors[0].length - 1) {
-            throw new ChybaCiePojebaloException();
+            throw new UnexpectedException();
         }
         int halfKernel = kernelSize / 2;
         int i = x - halfKernel;
